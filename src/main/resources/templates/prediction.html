@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Page</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <p>
+        <span th:text="${message}" />
+    </p>
+    <p>
+        <img th:src="'data:image/png;base64,' + ${image}" />
+    </p>
+    <p>
+        <a href="/" class="btn btn-primary">Go to Home</a>
+    </p>
+</div>
+</body>
+</html>

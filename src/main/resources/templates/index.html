@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload JPG file</title>
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+<div class="container-fluid">
+    <h1>Image Classification</h1>
+    <p>DLJ Demonstration by mosa</p>
+    <form>
+        <div class="form-group">
+            <label for="exampleFormControlFile1">Bitte Bild hochladen (jpeg, png)</label>
+            <input type="file" accept="..." class="form-control-file" id="image" name="image"
+                   onchange="checkFiles(this.files);">
+        </div>
+    </form>
+    <div id="answerPart" style="visibility: hidden;">
+        <p><b>Answer:</b>
+        <div id="answer"></div>
+        </p>
+        <p id="previewPart"><b>Analyzed Image:</b>
+        <p><img id="preview" width="300" src="#" alt="preview" /></p>
+        </p>
+    </div>
+</div>
+</body>
+
+</html>

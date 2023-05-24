@@ -1,5 +1,5 @@
 package ch.zhaw.stammnoa.java_spring;
-import ai.djl.Model;
+import ch.zhaw.stammnoa.java_spring.controller.Model;
 import ai.djl.basicdataset.cv.classification.ImageFolder;
 import ai.djl.basicmodelzoo.cv.classification.ResNetV1;
 import ai.djl.metric.Metrics;
@@ -23,91 +23,37 @@ import java.nio.file.Paths;
 public class JavaSpringApplication {
 
     public JavaSpringApplication() throws TranslateException, IOException {
+
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws TranslateException, IOException {
         SpringApplication.run(JavaSpringApplication.class, args);
+
+        // Instanz der Model-Klasse erstellen
+        Model model = new Model();
+        final String MODEL_NAME = "shoeclassifier";
+
+        ImageFolder dataset = model.initDataset("C:/MDM/ut-zap50k-images-square");
+        RandomAccessDataset[] datasets = dataset.randomSplit(8, 2);
+
+        RandomAccessDataset trainingSet = datasets[0];
+        RandomAccessDataset testSet = datasets[1];
+
+        model.getModel(MODEL_NAME);
+
+        //Konfiguration Training
+         Loss loss = Loss.softmaxCrossEntropyLoss();
+         TrainingConfig config = model.setupTrainingConfig(loss);
+
+        // Methode aufrufen
+        model.train(trainingSet, testSet, config, MODEL_NAME);
+
+
+
     }
-
-
-    ImageFolder dataset = initDataset("C:\\MDM\\ut-zap50k-images-square");
-    RandomAccessDataset[] datasets = dataset.randomSplit(8, 2);
-
-    RandomAccessDataset trainDataset = datasets[0];
-    RandomAccessDataset validateDataset = datasets[1];
-
-
-
-    public void data() throws TranslateException, IOException {
-    }
-
-
-    private static ImageFolder initDataset(String datasetRoot)
-            throws IOException, TranslateException {
-
-        ImageFolder dataset = ImageFolder.builder()
-
-                // retrieve the data
-                .setRepositoryPath(Paths.get(datasetRoot))
-                .optMaxDepth(10)
-                .addTransform(new Resize(32, 32))
-                .addTransform(new ToTensor())
-                // random sampling; don't process the data in order
-                .setSampling(32, true)
-                .build();
-        dataset.prepare();
-        return dataset;
-    }
-
-
-    // Modell initialisieren
-    public static final String MODEL_NAME = "shoeclassifier";
-
-    public static Model getModel() {
-        // create new instance of an empty model
-        Model model = Model.newInstance(MODEL_NAME);
-        Block resNet50 =
-                ResNetV1.builder() // construct the network
-                        .setImageShape(new Shape(3, 32, 32))
-                        .setNumLayers(50)
-                        .setOutSize(10)
-                        .build();
-        // set the neural network to the model
-        model.setBlock(resNet50);
-        return model;
-    }
-
-
-    //Konfiguration Training
-    Loss loss = Loss.softmaxCrossEntropyLoss();
-    TrainingConfig config = setupTrainingConfig(loss);
-
-    private static TrainingConfig setupTrainingConfig(Loss loss) {
-        return new DefaultTrainingConfig(loss)
-                .addEvaluator(new Accuracy())
-                .addTrainingListeners(TrainingListener.Defaults.logging());
-    }
-
-    train(trainDataset, validateDataset);
-    //Training
-    public void train(RandomAccessDataset trainDataset, RandomAccessDataset validateDataset) throws IOException, TranslateException {
-        try ( Model model = getModel();
-              Trainer trainer = model.newTrainer(config)) {
-            trainer.setMetrics(new Metrics());
-            Shape inputShape = new Shape(1, 3, 32, 32);
-            trainer.initialize(inputShape);
-            EasyTrain.fit(trainer, 1, trainDataset, validateDataset);
-            TrainingResult result = trainer.getTrainingResult();
-            model.setProperty("Epoch", String.valueOf(1));
-            model.setProperty("Accuracy", String.format("%.5f", result.getValidateEvaluation("Accuracy")));
-            model.setProperty("Loss", String.format("%.5f", result.getValidateLoss()));
-            model.save(Paths.get(Paths.get("src", "main", "model").toString()), MODEL_NAME);
-
-        }
-    }
-
 
 }
+
 
 
 
